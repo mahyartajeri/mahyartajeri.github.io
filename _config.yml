@@ -17,7 +17,7 @@ parameters:
         "x-requested-with",
       ]
     # Specify allowed request methods, specify ['*'] to allow all possible ones.
-    allowedMethods: ["GET"]
+    allowedMethods: ["GET", "PUT"]
     # Configure requests allowed from specific origins.
     allowedOrigins: ["https://mysite.com"]
     # Sets the Access-Control-Expose-Headers header.
