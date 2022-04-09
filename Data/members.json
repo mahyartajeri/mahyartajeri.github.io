@@ -1,0 +1,47 @@
+{
+  "type": "result",
+  "members": [
+    {
+      "name": "Mahyar",
+      "phoneNumber": 6475541352,
+      "address": "17 Acre Street",
+      "username": "mahyar420",
+      "password": "cps406",
+      "isCoach": false,
+      "booked": [],
+      "paid": [],
+      "prices": [],
+      "pricesPaid": [],
+      "inbox": [],
+      "discounts": 0
+    },
+    {
+      "name": "Cedric",
+      "phoneNumber": 9053239352,
+      "address": "309 Coconut Avenue",
+      "username": "cedric420",
+      "password": "cps406",
+      "isCoach": false,
+      "booked": [],
+      "paid": [],
+      "prices": [],
+      "pricesPaid": [],
+      "inbox": [],
+      "discounts": 0
+    },
+    {
+      "name": "John Doe",
+      "phoneNumber": 6475541352,
+      "address": "55 Crane Road",
+      "username": "john420",
+      "password": "cps406",
+      "isCoach": true,
+      "booked": [],
+      "paid": [],
+      "prices": [],
+      "pricesPaid": [],
+      "inbox": [],
+      "discounts": 0
+    }
+  ]
+}
