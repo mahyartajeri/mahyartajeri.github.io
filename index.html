@@ -1,1 +1,1288 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mahyar Tajeri — Builder of Fast Things</title>
+    <meta name="description"
+      content="Mahyar Tajeri — computer scientist & computational mathematician building fast, precise systems. Rust, ML, and hardware that ships." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Special+Elite&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --black: #000000;
+        --near-black: #0a0a0b;
+        --char: #16161a;
+        --silver: #d6d6d2;
+        --white: #f4f3ee;
+        --grey: #8c8c88;
+        --grey-dim: #5a5a57;
+        --line: rgba(244, 243, 238, 0.16);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+        scrollbar-color: #3a3a38 #000;
+      }
+
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #000;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #3a3a38;
+        border: 2px solid #000;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+
+      body {
+        background: var(--black);
+        color: var(--silver);
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 20px;
+        line-height: 1.7;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      ::selection {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      /* =================================================================
+     STATIC TEXTURE — one fixed grain layer + vignette. No animation.
+     ================================================================= */
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 9990;
+        pointer-events: none;
+        opacity: 0.07;
+        mix-blend-mode: screen;
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 1'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
+        background-size: 200px 200px;
+      }
+
+      .vignette {
+        position: fixed;
+        inset: 0;
+        z-index: 9989;
+        pointer-events: none;
+        background: radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.62) 100%);
+      }
+
+      /* =================================================================
+     PARALLAX BACKDROPS — real grainy B/W photos, fixed for parallax
+     ================================================================= */
+      .bg-fixed {
+        position: relative;
+        isolation: isolate;
+      }
+
+      .bg-fixed::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        filter: grayscale(1) contrast(1.08) brightness(0.5);
+      }
+
+      .bg-fixed::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.72) 55%, var(--black) 100%);
+      }
+
+      .bg-hero::before {
+        background-image: url("img/ceiling.jpg");
+      }
+
+      .bg-contact::before {
+        background-image: url("img/build.jpg");
+      }
+
+      .band-1::before {
+        background-image: url("img/grind.jpg");
+      }
+
+      .band-2::before {
+        background-image: url("img/ceiling.jpg");
+      }
+
+      /* ============ LAYOUT ============ */
+      .wrap {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 0 8vw;
+      }
+
+      /* ============ NAV ============ */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.6rem 8vw;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0));
+        transition: all 0.4s ease;
+      }
+
+      nav.solid {
+        background: rgba(0, 0, 0, 0.96);
+        border-bottom: 1px solid var(--line);
+        padding-top: 1.1rem;
+        padding-bottom: 1.1rem;
+      }
+
+      nav .brand {
+        font-family: "Special Elite", monospace;
+        letter-spacing: 0.15em;
+        font-size: 0.85rem;
+        color: var(--white);
+        border: 1px solid var(--line);
+        padding: 0.45rem 0.7rem;
+        line-height: 1;
+        transition: border-color 0.3s, background 0.3s, color 0.3s;
+      }
+
+      nav .brand:hover {
+        border-color: var(--silver);
+        background: var(--white);
+        color: var(--black);
+      }
+
+      nav ul {
+        display: flex;
+        gap: 2.6rem;
+        list-style: none;
+      }
+
+      nav ul a {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.72rem;
+        letter-spacing: 0.26em;
+        text-transform: uppercase;
+        color: var(--grey);
+        position: relative;
+        padding-bottom: 4px;
+        transition: color 0.3s;
+      }
+
+      nav ul a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0;
+        height: 1px;
+        background: var(--white);
+        transition: width 0.3s ease;
+      }
+
+      nav ul a:hover {
+        color: var(--white);
+      }
+
+      nav ul a:hover::after {
+        width: 100%;
+      }
+
+      /* ============ HERO ============ */
+      header.hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 9rem 8vw 6rem;
+      }
+
+      .hero .reel {
+        font-family: "Special Elite", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: var(--silver);
+        margin-bottom: 2.4rem;
+      }
+
+      .hero h1 {
+        font-family: "Oswald", sans-serif;
+        font-weight: 700;
+        font-size: clamp(3rem, 13vw, 10rem);
+        line-height: 0.86;
+        letter-spacing: 0.01em;
+        color: var(--white);
+        text-transform: uppercase;
+        text-shadow: 0 4px 60px rgba(0, 0, 0, 0.9);
+      }
+
+      .hero h1 .line2 {
+        display: block;
+        font-weight: 300;
+        color: var(--silver);
+      }
+
+      .deco-rule {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 2.6rem auto;
+        max-width: 420px;
+      }
+
+      .deco-rule .bar {
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+      }
+
+      .deco-rule .dot {
+        width: 5px;
+        height: 5px;
+        background: var(--silver);
+        border-radius: 50%;
+      }
+
+      .hero .tagline {
+        font-size: clamp(1.2rem, 2.8vw, 1.85rem);
+        font-style: italic;
+        color: var(--white);
+        max-width: 720px;
+        margin: 0 auto 2rem;
+        line-height: 1.4;
+        text-shadow: 0 2px 24px rgba(0, 0, 0, 0.85);
+      }
+
+      .hero .subline {
+        font-size: clamp(1rem, 2vw, 1.2rem);
+        color: var(--silver);
+        max-width: 640px;
+        margin: 0 auto 3rem;
+        line-height: 1.7;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.85);
+      }
+
+      .hero .roles {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.78rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--silver);
+        margin-bottom: 3.4rem;
+      }
+
+      /* ============ BUTTONS ============ */
+      .btn {
+        position: relative;
+        display: inline-block;
+        isolation: isolate;
+        font-family: "Oswald", sans-serif;
+        font-weight: 500;
+        font-size: 0.74rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--white);
+        background: transparent;
+        padding: 1.1rem 2.5rem;
+        border: 1px solid var(--silver);
+        overflow: hidden;
+        transition: color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        z-index: -1;
+        border: 1px solid rgba(244, 243, 238, 0.25);
+        transition: border-color 0.4s ease;
+      }
+
+      .btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        background: var(--white);
+        transform: scaleY(0);
+        transform-origin: bottom;
+        transition: transform 0.4s ease;
+      }
+
+      .btn:hover {
+        color: var(--black);
+        border-color: var(--white);
+        box-shadow: 0 0 26px rgba(244, 243, 238, 0.18);
+      }
+
+      .btn:hover::before {
+        border-color: rgba(0, 0, 0, 0.25);
+      }
+
+      .btn:hover::after {
+        transform: scaleY(1);
+      }
+
+      .btn.solid {
+        color: var(--black);
+        border-color: var(--white);
+      }
+
+      .btn.solid::after {
+        transform: scaleY(1);
+      }
+
+      .btn.solid::before {
+        border-color: rgba(0, 0, 0, 0.2);
+      }
+
+      .btn.solid:hover {
+        color: var(--white);
+        box-shadow: none;
+      }
+
+      .btn.solid:hover::after {
+        transform: scaleY(0);
+      }
+
+      .btn.solid:hover::before {
+        border-color: rgba(244, 243, 238, 0.25);
+      }
+
+      .btn.ghost {
+        margin-left: 1.2rem;
+      }
+
+      .scroll-cue {
+        position: absolute;
+        bottom: 2.4rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.6rem;
+        letter-spacing: 0.32em;
+        color: var(--silver);
+        text-transform: uppercase;
+      }
+
+      .scroll-cue span {
+        display: block;
+        width: 1px;
+        height: 42px;
+        margin: 0.7rem auto 0;
+        background: var(--line);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .scroll-cue span::after {
+        content: "";
+        position: absolute;
+        top: -42px;
+        left: 0;
+        width: 1px;
+        height: 42px;
+        background: var(--white);
+        animation: drop 2.2s ease-in-out infinite;
+      }
+
+      @keyframes drop {
+        0% {
+          top: -42px;
+        }
+
+        60%,
+        100% {
+          top: 42px;
+        }
+      }
+
+      /* ============ SECTIONS ============ */
+      section {
+        padding: 8.5rem 0;
+        position: relative;
+      }
+
+      .section-head {
+        margin-bottom: 4.5rem;
+      }
+
+      .section-head .scene {
+        font-family: "Special Elite", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.25em;
+        color: var(--grey);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.1rem;
+        text-transform: uppercase;
+      }
+
+      .section-head .scene::before {
+        content: "";
+        width: 28px;
+        height: 1px;
+        background: var(--silver);
+      }
+
+      .section-head .scene::after {
+        content: "●";
+        font-size: 0.5rem;
+        color: var(--silver);
+      }
+
+      .section-head h2 {
+        font-family: "Oswald", sans-serif;
+        font-weight: 500;
+        font-size: clamp(2rem, 5.5vw, 3.6rem);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--white);
+      }
+
+      .section-head .underline {
+        width: 60px;
+        height: 2px;
+        background: var(--white);
+        margin-top: 1.4rem;
+      }
+
+      /* About */
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        gap: 5.5rem;
+        align-items: start;
+      }
+
+      .about-lead {
+        font-size: 1.7rem;
+        line-height: 1.5;
+        color: var(--white);
+      }
+
+      .about-lead em {
+        color: var(--silver);
+        font-style: italic;
+      }
+
+      .about-body p {
+        color: var(--grey);
+        margin-bottom: 1.6rem;
+        line-height: 1.8;
+      }
+
+      .about-now {
+        margin-top: 2rem;
+        border-left: 2px solid var(--silver);
+        padding: 0.6rem 0 0.6rem 1.4rem;
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--silver);
+        line-height: 2.1;
+      }
+
+      .about-now b {
+        color: var(--white);
+        font-weight: 500;
+      }
+
+      /* ============ INTERSTITIAL PARALLAX BANDS ============ */
+      .band {
+        position: relative;
+        min-height: 62vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 6rem 8vw;
+        overflow: hidden;
+      }
+
+      .band blockquote {
+        font-family: "Cormorant Garamond", serif;
+        font-style: italic;
+        font-size: clamp(1.6rem, 4.2vw, 2.9rem);
+        color: var(--white);
+        max-width: 860px;
+        line-height: 1.32;
+        text-shadow: 0 2px 34px rgba(0, 0, 0, 0.85);
+      }
+
+      .band cite {
+        display: block;
+        margin-top: 1.6rem;
+        font-family: "Oswald", sans-serif;
+        font-style: normal;
+        font-size: 0.66rem;
+        letter-spacing: 0.34em;
+        text-transform: uppercase;
+        color: var(--silver);
+      }
+
+      /* ============ NOIR PANELS (image-backed plates) ============ */
+      .featured {
+        display: grid;
+        gap: 3rem;
+      }
+
+      .feature {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 3.5rem;
+        align-items: stretch;
+        border: 1px solid var(--line);
+        padding: 2.4rem;
+        position: relative;
+        background: linear-gradient(155deg, rgba(20, 20, 24, 0.9) 0%, rgba(5, 5, 7, 0.92) 100%);
+        transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+      }
+
+      .feature::before {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border: 1px solid rgba(244, 243, 238, 0.10);
+        pointer-events: none;
+        transition: border-color 0.4s ease;
+      }
+
+      .feature::after {
+        content: "";
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 24px;
+        height: 24px;
+        border-top: 1px solid var(--silver);
+        border-right: 1px solid var(--silver);
+        opacity: 0.4;
+        transition: all 0.4s ease;
+      }
+
+      .feature:hover {
+        border-color: var(--silver);
+        transform: translateY(-5px);
+        box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+      }
+
+      .feature:hover::before {
+        border-color: rgba(244, 243, 238, 0.22);
+      }
+
+      .feature:hover::after {
+        width: 38px;
+        height: 38px;
+        opacity: 1;
+      }
+
+      .feature:nth-child(even) {
+        grid-template-columns: 1fr 320px;
+      }
+
+      .feature:nth-child(even) .plate {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .feature:nth-child(even) .feature-body {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .plate {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.1rem;
+        min-height: 240px;
+        overflow: hidden;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        filter: grayscale(1) contrast(1.05);
+      }
+
+      .plate::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.78));
+      }
+
+      .plate.p1 {
+        background-image: url("img/bread.jpg");
+      }
+
+      .plate.p2 {
+        background-image: url("img/sat.jpg");
+      }
+
+      .plate.p3 {
+        background-image: url("img/bull.jpg");
+      }
+
+      .plate.p4 {
+        background-image: url("img/dim-street.jpg");
+      }
+
+      .plate .num {
+        font-family: "Oswald", sans-serif;
+        font-weight: 700;
+        font-size: 5.2rem;
+        color: var(--white);
+        line-height: 1;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 24px rgba(0, 0, 0, 0.9);
+      }
+
+      .plate .plabel {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.62rem;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: var(--silver);
+        position: relative;
+        z-index: 1;
+      }
+
+      .feature-body {
+        padding: 1rem 1rem 1.2rem 0;
+      }
+
+      .feature .tag {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.64rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--grey);
+      }
+
+      .feature h3 {
+        font-family: "Oswald", sans-serif;
+        font-weight: 600;
+        font-size: 1.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.01em;
+        color: var(--white);
+        margin: 0.7rem 0 1.1rem;
+        line-height: 1.1;
+      }
+
+      .feature p {
+        color: var(--grey);
+        font-size: 1.08rem;
+        line-height: 1.8;
+      }
+
+      .feature p .pop {
+        color: var(--silver);
+        font-style: italic;
+      }
+
+      .feature .stack {
+        margin-top: 1.6rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .feature .stack span {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.58rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--silver);
+        border: 1px solid var(--line);
+        padding: 0.35rem 0.75rem;
+      }
+
+      .feature .more {
+        display: inline-block;
+        margin-top: 1.6rem;
+        font-family: "Oswald", sans-serif;
+        font-weight: 400;
+        font-size: 0.64rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--white);
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 3px;
+      }
+
+      .feature .more:hover {
+        border-color: var(--white);
+      }
+
+      /* Experience */
+      .timeline {
+        border-left: 1px solid var(--line);
+        margin-left: 0.5rem;
+      }
+
+      .entry {
+        position: relative;
+        padding: 0 0 3.6rem 2.9rem;
+      }
+
+      .entry:last-child {
+        padding-bottom: 0;
+      }
+
+      .entry::before {
+        content: "";
+        position: absolute;
+        left: -5px;
+        top: 0.6rem;
+        width: 9px;
+        height: 9px;
+        background: var(--black);
+        border: 1px solid var(--silver);
+        border-radius: 50%;
+        transition: background 0.3s;
+      }
+
+      .entry:hover::before {
+        background: var(--white);
+      }
+
+      .entry .when {
+        font-family: "Special Elite", monospace;
+        font-size: 0.66rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--grey);
+      }
+
+      .entry h3 {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--white);
+        margin: 0.4rem 0 0.3rem;
+      }
+
+      .entry .org {
+        font-style: italic;
+        color: var(--grey);
+        margin-bottom: 1rem;
+      }
+
+      .entry ul {
+        list-style: none;
+      }
+
+      .entry ul li {
+        color: var(--grey);
+        padding-left: 1.5rem;
+        position: relative;
+        margin-bottom: 0.6rem;
+        font-size: 1.02rem;
+        line-height: 1.65;
+      }
+
+      .entry ul li::before {
+        content: "—";
+        position: absolute;
+        left: 0;
+        color: var(--silver);
+      }
+
+      /* Skills */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 3rem 3.5rem;
+      }
+
+      .skill-col h4 {
+        font-family: "Oswald", sans-serif;
+        font-weight: 400;
+        font-size: 0.74rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--white);
+        margin-bottom: 1.3rem;
+        padding-bottom: 0.7rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .skill-col ul {
+        list-style: none;
+      }
+
+      .skill-col li {
+        color: var(--grey);
+        margin-bottom: 0.6rem;
+        font-size: 1.05rem;
+      }
+
+      .skill-col li::before {
+        content: "— ";
+        color: var(--silver);
+      }
+
+      /* Contact */
+      .contact {
+        text-align: center;
+      }
+
+      .contact .scene {
+        font-family: "Special Elite", monospace;
+        font-size: 0.7rem;
+        letter-spacing: 0.25em;
+        color: var(--silver);
+        display: block;
+        margin-bottom: 1.2rem;
+        text-transform: uppercase;
+      }
+
+      .contact h2 {
+        font-family: "Oswald", sans-serif;
+        font-weight: 700;
+        font-size: clamp(2.4rem, 8vw, 5.5rem);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: var(--white);
+        text-shadow: 0 4px 40px rgba(0, 0, 0, 0.85);
+      }
+
+      .contact p {
+        color: var(--silver);
+        font-style: italic;
+        font-size: 1.4rem;
+        max-width: 580px;
+        margin: 1.6rem auto 3rem;
+        line-height: 1.6;
+        text-shadow: 0 2px 20px rgba(0, 0, 0, 0.85);
+      }
+
+      .contact-links {
+        display: flex;
+        gap: 2.4rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .contact-links a {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.74rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--silver);
+        border-bottom: 1px solid transparent;
+        padding-bottom: 4px;
+        transition: all 0.3s;
+      }
+
+      .contact-links a:hover {
+        color: var(--white);
+        border-color: var(--white);
+      }
+
+      footer {
+        text-align: center;
+        padding: 3.5rem 8vw;
+        border-top: 1px solid var(--line);
+        background: var(--black);
+      }
+
+      footer .fin {
+        font-family: "Special Elite", monospace;
+        color: var(--grey);
+        font-size: 0.8rem;
+        letter-spacing: 0.3em;
+        margin-bottom: 1rem;
+      }
+
+      footer .deco-rule {
+        margin-bottom: 1.6rem;
+      }
+
+      footer p {
+        font-family: "Oswald", sans-serif;
+        font-weight: 300;
+        font-size: 0.64rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--grey-dim);
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity 0.9s ease, transform 0.9s ease;
+      }
+
+      .reveal.in {
+        opacity: 1;
+        transform: none;
+      }
+
+      @media (max-width: 820px) {
+        body {
+          font-size: 18px;
+        }
+
+        nav ul {
+          display: none;
+        }
+
+        /* fixed backgrounds are janky on mobile — pin them */
+        .bg-fixed::before {
+          background-attachment: scroll;
+        }
+
+        .about-grid,
+        .skills-grid {
+          grid-template-columns: 1fr;
+          gap: 2.5rem;
+        }
+
+        .feature,
+        .feature:nth-child(even) {
+          grid-template-columns: 1fr;
+          gap: 1.8rem;
+          padding: 1.8rem;
+        }
+
+        .feature:nth-child(even) .plate,
+        .feature:nth-child(even) .feature-body {
+          grid-column: 1;
+        }
+
+        .plate {
+          min-height: 170px;
+        }
+
+        .feature-body {
+          padding: 0;
+        }
+
+        section {
+          padding: 5.5rem 0;
+        }
+
+        .band {
+          min-height: 50vh;
+        }
+
+        .btn.ghost {
+          margin-left: 0;
+          margin-top: 1rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+
+    <nav id="nav">
+      <a href="#" class="brand">M·T</a>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <header class="hero bg-fixed bg-hero">
+      <p class="reel">Reel 01 · Waterloo · 2026</p>
+      <h1>Mahyar<span class="line2">Tajeri</span></h1>
+      <div class="deco-rule"><span class="bar"></span><span class="dot"></span><span class="bar"></span></div>
+      <p class="tagline">I build fast software. Sometimes it controls knives.</p>
+      <p class="subline">Satellite-network simulators in Rust. Vision models that hold up outside the lab. The brains of
+        a machine that slices bread to the millimeter. I go looking for problems that bite back.</p>
+      <p class="roles">Rust · Machine Learning · Things That Run Fast</p>
+      <div>
+        <a href="#work" class="btn solid">See the Work</a>
+        <a href="#contact" class="btn ghost">Let's Build</a>
+      </div>
+      <br>
+      <div class="scroll-cue">Scroll<span></span></div>
+    </header>
+
+    <main>
+
+      <section id="about" class="wrap">
+        <div class="section-head reveal">
+          <span class="scene">Scene I — The Operator</span>
+          <h2>About</h2>
+          <div class="underline"></div>
+        </div>
+        <div class="about-grid">
+          <p class="about-lead reveal">Speed and precision. That's pretty much the whole pitch — I like the problems
+            where the math is <em>actually</em> hard and "close enough" doesn't get you paid.</p>
+          <div class="about-body reveal">
+            <p>I started out writing weather code for the federal government. These days I'm at Waterloo working out how
+              to route data between satellites moving at 7 km/s. Somewhere in the middle I wrote neural nets by hand,
+              trained vision models, and programmed a machine that cuts bread better than I can.</p>
+            <p>Software, math, hardware — I don't really have a favorite. I have one question: can I make it work, and
+              can I make it fast. So far the answer keeps being yes.</p>
+            <div class="about-now">
+              <b>Now:</b> Backend @ Abnormal AI<br />
+              <b>Researching:</b> LEO satellite networks @ Waterloo (MMath)<br />
+              <b>Status:</b> Building. Always.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="work" class="wrap">
+        <div class="section-head reveal">
+          <span class="scene">Scene II — The Evidence</span>
+          <h2>Selected Work</h2>
+          <div class="underline"></div>
+        </div>
+        <div class="featured">
+
+          <div class="feature reveal">
+            <div class="plate p1">
+              <span class="num">01</span>
+              <span class="plabel">Hardware</span>
+            </div>
+            <div class="feature-body">
+              <span class="tag">C++ · Real-Time Control · Teensy 4.1</span>
+              <h3>The Bread-Slicing Robot</h3>
+              <p>Someone needed to slice loaves with a wildly uneven top, so I wrote the firmware. It scans the surface
+                in real time using a sensor I rigged from a needle and a rotary encoder, runs the trig on the fly, and
+                drives two knives to within a millimeter. <span class="pop">Bread doesn't forgive sloppy code.</span>
+                This one cuts clean every time.</p>
+              <div class="stack"><span>C++</span><span>PlatformIO</span><span>Stepper Control</span><span>Sensor
+                  Fusion</span><span>Fusion 360</span></div>
+            </div>
+          </div>
+
+          <div class="feature reveal">
+            <div class="plate p2">
+              <span class="num">02</span>
+              <span class="plabel">Systems</span>
+            </div>
+            <div class="feature-body">
+              <span class="tag">Rust · Bevy · Space Networking</span>
+              <h3>A Simulator for the Internet of Space</h3>
+              <p>This is my Master's research. A non-terrestrial network simulator, written from scratch in Rust — fast,
+                reproducible down to the bit, with a live 3-D view of constellations tearing across low orbit. <span
+                  class="pop">It's where I test ML routing: how do you move a packet when every router is a satellite
+                  doing 7 km/s?</span></p>
+              <div class="stack"><span>Rust</span><span>Bevy 3-D</span><span>Deep RL</span><span>LEO
+                  Constellations</span><span>SAGIN</span></div>
+            </div>
+          </div>
+
+          <div class="feature reveal">
+            <div class="plate p3">
+              <span class="num">03</span>
+              <span class="plabel">ML / NLP</span>
+            </div>
+            <div class="feature-body">
+              <span class="tag">Python · NLP · Data Viz</span>
+              <h3>Reading the Market's Mind</h3>
+              <p>Five years of S&amp;P 500 news, scraped down to gigabytes. I taught NLP models to pull out the
+                real-world events buried in all that text, then lined them up against stock prices to find where
+                headlines actually moved money. <span class="pop">Then I made it something you can click around in,
+                  because nobody reads a spreadsheet for fun.</span></p>
+              <div class="stack"><span>Python</span><span>NLP</span><span>Web Scraping</span><span>Data Viz</span></div>
+              <a class="more" href="https://mahyartajeri.github.io/cps870" target="_blank" rel="noopener">Play with the
+                demo →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="band bg-fixed band-1">
+        <blockquote>
+          One iteration closer to freedom
+          <cite>— House Rule</cite>
+        </blockquote>
+      </section>
+
+      <section id="experience" class="wrap">
+        <div class="section-head reveal">
+          <span class="scene">Scene III — The Track Record</span>
+          <h2>Experience</h2>
+          <div class="underline"></div>
+        </div>
+        <div class="timeline">
+          <div class="entry reveal">
+            <p class="when">May 2026 — Present</p>
+            <h3>Backend Developer · Abnormal AI</h3>
+            <p class="org">Keeping flagship services fast when the traffic gets ugly.</p>
+            <ul>
+              <li>Built a predictive auto-scaler on Fourier-series regression — cut prediction error to a third of the
+                old heuristic.</li>
+              <li>Reviews, fixes, and docs, all in a fully AI-native workflow.</li>
+            </ul>
+          </div>
+          <div class="entry reveal">
+            <p class="when">Jan 2026 — Present</p>
+            <h3>Research Assistant · University of Manitoba</h3>
+            <p class="org">The satellite-network simulator up above started here.</p>
+            <ul>
+              <li>Built in Rust for raw speed and bit-for-bit reproducibility, with interactive 3-D visualization.</li>
+              <li>Benchmarking latency, throughput, and resiliency across classical and ML-based routing.</li>
+            </ul>
+          </div>
+          <div class="entry reveal">
+            <p class="when">May 2023 — Aug 2024</p>
+            <h3>Software Developer · Environment & Climate Change Canada</h3>
+            <p class="org">Code that millions of Canadians actually open.</p>
+            <ul>
+              <li>Shipped features for weather.gc.ca — new endpoints and data visualizations in Vue.</li>
+              <li>Wrangled big data into something usable; ran remote servers and MySQL/Postgres databases.</li>
+              <li>Built internal Python tooling and reviewed PRs with senior engineers.</li>
+            </ul>
+          </div>
+          <div class="entry reveal">
+            <p class="when">May 2022 — Sep 2022</p>
+            <h3>Data Analyst · Ministry of Public & Business Service Delivery</h3>
+            <p class="org">Turning raw infrastructure data into something people could act on.</p>
+            <ul>
+              <li>Built Power BI reporting and piped data through Azure Data Factory into SQL servers.</li>
+              <li>Reviewed PowerShell tooling and tracked fleet health from the terminal.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="skills" class="wrap">
+        <div class="section-head reveal">
+          <span class="scene">Scene IV — The Arsenal</span>
+          <h2>Skills</h2>
+          <div class="underline"></div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-col reveal">
+            <h4>Languages</h4>
+            <ul>
+              <li>Rust</li>
+              <li>Python</li>
+              <li>C++</li>
+              <li>Java</li>
+              <li>JavaScript</li>
+              <li>SQL</li>
+              <li>HTML / CSS</li>
+            </ul>
+          </div>
+          <div class="skill-col reveal">
+            <h4>Machine Learning</h4>
+            <ul>
+              <li>PyTorch</li>
+              <li>TensorFlow</li>
+              <li>Nets from scratch</li>
+              <li>Computer vision</li>
+              <li>Deep RL</li>
+              <li>Numerical methods</li>
+            </ul>
+          </div>
+          <div class="skill-col reveal">
+            <h4>Systems & Cloud</h4>
+            <ul>
+              <li>REST APIs</li>
+              <li>Vue & React</li>
+              <li>Flutter</li>
+              <li>AWS & Firebase</li>
+              <li>MySQL / Postgres</li>
+              <li>MongoDB</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="contact bg-fixed bg-contact">
+        <div class="wrap reveal">
+          <span class="scene">Scene V — The Invitation</span>
+          <h2>Let's Build Something</h2>
+          <p>Got something ambitious, ugly, or a little bit unreasonable? That's usually the good stuff. Drop me a line.
+          </p>
+          <div class="contact-links">
+            <a href="mailto:mtajeri@uwaterloo.ca">mtajeri@uwaterloo.ca</a>
+            <a href="https://github.com/mahyartajeri" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <p class="fin">— FIN —</p>
+      <div class="deco-rule"><span class="bar"></span><span class="dot"></span><span class="bar"></span></div>
+      <p>Mahyar Tajeri · MMXXVI</p>
+    </footer>
+
+    <script>
+      const nav = document.getElementById('nav');
+      const onScroll = () => nav.classList.toggle('solid', window.scrollY > 60);
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e, i) => {
+          if (e.isIntersecting) {
+            e.target.style.transitionDelay = (i % 4) * 0.08 + 's';
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    </script>
+
+  </body>
+
+</html>
