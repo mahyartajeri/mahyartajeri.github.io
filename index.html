@@ -10,18 +10,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Special+Elite&display=swap"
+      href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap"
       rel="stylesheet" />
     <style>
       :root {
-        --black: #000000;
-        --near-black: #0a0a0b;
-        --char: #16161a;
-        --silver: #d6d6d2;
-        --white: #f4f3ee;
-        --grey: #8c8c88;
-        --grey-dim: #5a5a57;
-        --line: rgba(244, 243, 238, 0.16);
+        --black: #050300;
+        --near-black: #0c0700;
+        --char: #1a1200;
+        --silver: #b07800;
+        --white: #ffb000;
+        --grey: #7a5500;
+        --grey-dim: #4a3300;
+        --line: rgba(255, 176, 0, 0.18);
+        --amber: #ffb000;
+        --amber-bright: #ffd166;
+        --glow: rgba(255, 176, 0, 0.55);
       }
 
       * {
@@ -33,7 +36,7 @@
       html {
         scroll-behavior: smooth;
         scrollbar-width: thin;
-        scrollbar-color: #3a3a38 #000;
+        scrollbar-color: #5a3d00 #050300;
       }
 
       ::-webkit-scrollbar {
@@ -41,22 +44,22 @@
       }
 
       ::-webkit-scrollbar-track {
-        background: #000;
+        background: var(--black);
       }
 
       ::-webkit-scrollbar-thumb {
-        background: #3a3a38;
-        border: 2px solid #000;
+        background: #5a3d00;
+        border: 2px solid var(--black);
       }
 
       ::-webkit-scrollbar-thumb:hover {
-        background: #555;
+        background: #9c6800;
       }
 
       body {
         background: var(--black);
         color: var(--silver);
-        font-family: "Cormorant Garamond", Georgia, serif;
+        font-family: "Share Tech Mono", monospace;
         font-size: 20px;
         line-height: 1.7;
         overflow-x: hidden;
@@ -74,7 +77,7 @@
       }
 
       /* =================================================================
-     STATIC TEXTURE — one fixed grain layer + vignette. No animation.
+     CRT TEXTURE — grain, vignette, scanlines, flicker, glitch.
      ================================================================= */
       .grain {
         position: fixed;
@@ -83,7 +86,7 @@
         pointer-events: none;
         opacity: 0.07;
         mix-blend-mode: screen;
-        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 1'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
+        background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 0.69  0 0 0 0 0  1 0 0 0 0'/><feComponentTransfer><feFuncA type='discrete' tableValues='0 0 0 0 0 1'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23g)'/></svg>");
         background-size: 200px 200px;
       }
 
@@ -92,7 +95,167 @@
         inset: 0;
         z-index: 9989;
         pointer-events: none;
-        background: radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.62) 100%);
+        background: radial-gradient(ellipse at center, transparent 48%, rgba(20, 10, 0, 0.55) 80%, rgba(0, 0, 0, 0.94) 100%);
+      }
+
+      .scanlines {
+        position: fixed;
+        inset: 0;
+        z-index: 9991;
+        pointer-events: none;
+        background: repeating-linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.28) 0px,
+            rgba(0, 0, 0, 0.28) 1px,
+            transparent 1px,
+            transparent 3px);
+        background-size: 100% 4px;
+        mix-blend-mode: multiply;
+        animation: scan 28s linear infinite;
+      }
+
+      @keyframes scan {
+        0% {
+          background-position: 0 0;
+        }
+
+        100% {
+          background-position: 0 400px;
+        }
+      }
+
+      .crt-flicker {
+        position: fixed;
+        inset: 0;
+        z-index: 9992;
+        pointer-events: none;
+        background: var(--amber);
+        mix-blend-mode: overlay;
+        opacity: 0;
+        animation: flicker 4.5s infinite;
+      }
+
+      @keyframes flicker {
+
+        0%,
+        100% {
+          opacity: 0;
+        }
+
+        2% {
+          opacity: 0.08;
+        }
+
+        2.6% {
+          opacity: 0.015;
+        }
+
+        6% {
+          opacity: 0.06;
+        }
+
+        6.3% {
+          opacity: 0;
+        }
+
+        24% {
+          opacity: 0;
+        }
+
+        24.2% {
+          opacity: 0.045;
+        }
+
+        24.6% {
+          opacity: 0;
+        }
+
+        41% {
+          opacity: 0;
+        }
+
+        41.2% {
+          opacity: 0.05;
+        }
+
+        41.6% {
+          opacity: 0;
+        }
+
+        55% {
+          opacity: 0;
+        }
+
+        55.3% {
+          opacity: 0.035;
+        }
+
+        55.6% {
+          opacity: 0;
+        }
+
+        70% {
+          opacity: 0;
+        }
+
+        70.3% {
+          opacity: 0.07;
+        }
+
+        70.7% {
+          opacity: 0;
+        }
+
+        85% {
+          opacity: 0;
+        }
+
+        85.2% {
+          opacity: 0.04;
+        }
+
+        85.5% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes glitch {
+
+        0%,
+        96%,
+        100% {
+          text-shadow: 0 4px 60px rgba(0, 0, 0, 0.9), 0 0 26px var(--glow);
+          transform: translate(0, 0);
+        }
+
+        96.5% {
+          text-shadow: -2px 0 #ff3b3b, 2px 0 #00e0ff, 0 4px 60px rgba(0, 0, 0, 0.9);
+          transform: translate(-2px, 0);
+        }
+
+        97% {
+          text-shadow: 2px 0 #ff3b3b, -2px 0 #00e0ff, 0 4px 60px rgba(0, 0, 0, 0.9);
+          transform: translate(2px, 0);
+        }
+
+        97.5% {
+          text-shadow: 0 4px 60px rgba(0, 0, 0, 0.9), 0 0 26px var(--glow);
+          transform: translate(0, 0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+
+        .crt-flicker {
+          display: none;
+        }
+
+        .scanlines {
+          animation: none;
+        }
+
+        .hero h1 {
+          animation: none !important;
+        }
       }
 
       /* =================================================================
@@ -112,7 +275,7 @@
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;
-        filter: grayscale(1) contrast(1.08) brightness(0.5);
+        filter: grayscale(1) brightness(0.45) contrast(1.15) sepia(1) hue-rotate(-15deg) saturate(2.8);
       }
 
       .bg-fixed::after {
@@ -120,7 +283,7 @@
         position: absolute;
         inset: 0;
         z-index: -1;
-        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.72) 55%, var(--black) 100%);
+        background: linear-gradient(to bottom, var(--black) 0%, rgba(10, 5, 0, 0.6) 12%, rgba(8, 4, 0, 0.75) 55%, var(--black) 100%);
       }
 
       .bg-hero::before {
@@ -169,7 +332,7 @@
       }
 
       nav .brand {
-        font-family: "Special Elite", monospace;
+        font-family: "Share Tech Mono", monospace;
         letter-spacing: 0.15em;
         font-size: 0.85rem;
         color: var(--white);
@@ -192,10 +355,10 @@
       }
 
       nav ul a {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.72rem;
-        letter-spacing: 0.26em;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         color: var(--grey);
         position: relative;
@@ -233,23 +396,24 @@
       }
 
       .hero .reel {
-        font-family: "Special Elite", monospace;
+        font-family: "Share Tech Mono", monospace;
         font-size: 0.72rem;
-        letter-spacing: 0.34em;
+        letter-spacing: 0.2em;
         text-transform: uppercase;
         color: var(--silver);
         margin-bottom: 2.4rem;
       }
 
       .hero h1 {
-        font-family: "Oswald", sans-serif;
-        font-weight: 700;
-        font-size: clamp(3rem, 13vw, 10rem);
-        line-height: 0.86;
-        letter-spacing: 0.01em;
+        font-family: "VT323", monospace;
+        font-weight: 400;
+        font-size: clamp(3.4rem, 15vw, 11.5rem);
+        line-height: 0.9;
+        letter-spacing: 0.02em;
         color: var(--white);
         text-transform: uppercase;
-        text-shadow: 0 4px 60px rgba(0, 0, 0, 0.9);
+        text-shadow: 0 4px 60px rgba(0, 0, 0, 0.9), 0 0 26px var(--glow);
+        animation: glitch 9s infinite;
       }
 
       .hero h1 .line2 {
@@ -282,7 +446,6 @@
 
       .hero .tagline {
         font-size: clamp(1.2rem, 2.8vw, 1.85rem);
-        font-style: italic;
         color: var(--white);
         max-width: 720px;
         margin: 0 auto 2rem;
@@ -300,10 +463,10 @@
       }
 
       .hero .roles {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.78rem;
-        letter-spacing: 0.3em;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
         color: var(--silver);
         margin-bottom: 3.4rem;
@@ -314,10 +477,10 @@
         position: relative;
         display: inline-block;
         isolation: isolate;
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 500;
         font-size: 0.74rem;
-        letter-spacing: 0.28em;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         color: var(--white);
         background: transparent;
@@ -332,7 +495,7 @@
         position: absolute;
         inset: 4px;
         z-index: -1;
-        border: 1px solid rgba(244, 243, 238, 0.25);
+        border: 1px solid rgba(255, 176, 0, 0.25);
         transition: border-color 0.4s ease;
       }
 
@@ -384,7 +547,7 @@
       }
 
       .btn.solid:hover::before {
-        border-color: rgba(244, 243, 238, 0.25);
+        border-color: rgba(255, 176, 0, 0.25);
       }
 
       .btn.ghost {
@@ -396,10 +559,10 @@
         bottom: 2.4rem;
         left: 50%;
         transform: translateX(-50%);
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.6rem;
-        letter-spacing: 0.32em;
+        letter-spacing: 0.2em;
         color: var(--silver);
         text-transform: uppercase;
       }
@@ -447,9 +610,9 @@
       }
 
       .section-head .scene {
-        font-family: "Special Elite", monospace;
+        font-family: "Share Tech Mono", monospace;
         font-size: 0.7rem;
-        letter-spacing: 0.25em;
+        letter-spacing: 0.15em;
         color: var(--grey);
         display: inline-flex;
         align-items: center;
@@ -472,12 +635,13 @@
       }
 
       .section-head h2 {
-        font-family: "Oswald", sans-serif;
-        font-weight: 500;
-        font-size: clamp(2rem, 5.5vw, 3.6rem);
+        font-family: "VT323", monospace;
+        font-weight: 400;
+        font-size: clamp(2.4rem, 6.5vw, 4.4rem);
         text-transform: uppercase;
         letter-spacing: 0.04em;
         color: var(--white);
+        text-shadow: 0 0 18px var(--glow);
       }
 
       .section-head .underline {
@@ -502,8 +666,9 @@
       }
 
       .about-lead em {
-        color: var(--silver);
-        font-style: italic;
+        color: var(--amber-bright);
+        font-style: normal;
+        text-shadow: 0 0 10px var(--glow);
       }
 
       .about-body p {
@@ -516,7 +681,7 @@
         margin-top: 2rem;
         border-left: 2px solid var(--silver);
         padding: 0.6rem 0 0.6rem 1.4rem;
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.82rem;
         letter-spacing: 0.08em;
@@ -543,9 +708,8 @@
       }
 
       .band blockquote {
-        font-family: "Cormorant Garamond", serif;
-        font-style: italic;
-        font-size: clamp(1.6rem, 4.2vw, 2.9rem);
+        font-family: "VT323", monospace;
+        font-size: clamp(1.8rem, 4.6vw, 3.2rem);
         color: var(--white);
         max-width: 860px;
         line-height: 1.32;
@@ -555,10 +719,10 @@
       .band cite {
         display: block;
         margin-top: 1.6rem;
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-style: normal;
         font-size: 0.66rem;
-        letter-spacing: 0.34em;
+        letter-spacing: 0.2em;
         text-transform: uppercase;
         color: var(--silver);
       }
@@ -577,7 +741,7 @@
         border: 1px solid var(--line);
         padding: 2.4rem;
         position: relative;
-        background: linear-gradient(155deg, rgba(20, 20, 24, 0.9) 0%, rgba(5, 5, 7, 0.92) 100%);
+        background: linear-gradient(155deg, rgba(26, 18, 4, 0.9) 0%, rgba(8, 5, 0, 0.92) 100%);
         transition: border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
       }
 
@@ -585,7 +749,7 @@
         content: "";
         position: absolute;
         inset: 8px;
-        border: 1px solid rgba(244, 243, 238, 0.10);
+        border: 1px solid rgba(255, 176, 0, 0.10);
         pointer-events: none;
         transition: border-color 0.4s ease;
       }
@@ -610,7 +774,7 @@
       }
 
       .feature:hover::before {
-        border-color: rgba(244, 243, 238, 0.22);
+        border-color: rgba(255, 176, 0, 0.22);
       }
 
       .feature:hover::after {
@@ -645,14 +809,14 @@
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;
-        filter: grayscale(1) contrast(1.05);
+        filter: grayscale(1) brightness(0.9) contrast(1.1) sepia(1) hue-rotate(-15deg) saturate(2.5);
       }
 
       .plate::after {
         content: "";
         position: absolute;
         inset: 0;
-        background: radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.78));
+        background: radial-gradient(circle at 50% 40%, rgba(20, 10, 0, 0.35), rgba(5, 3, 0, 0.85));
       }
 
       .plate.p1 {
@@ -672,21 +836,21 @@
       }
 
       .plate .num {
-        font-family: "Oswald", sans-serif;
-        font-weight: 700;
-        font-size: 5.2rem;
+        font-family: "VT323", monospace;
+        font-weight: 400;
+        font-size: 6.4rem;
         color: var(--white);
         line-height: 1;
         position: relative;
         z-index: 1;
-        text-shadow: 0 2px 24px rgba(0, 0, 0, 0.9);
+        text-shadow: 0 2px 24px rgba(0, 0, 0, 0.9), 0 0 20px var(--glow);
       }
 
       .plate .plabel {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.62rem;
-        letter-spacing: 0.32em;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
         color: var(--silver);
         position: relative;
@@ -698,18 +862,18 @@
       }
 
       .feature .tag {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.64rem;
-        letter-spacing: 0.22em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--grey);
       }
 
       .feature h3 {
-        font-family: "Oswald", sans-serif;
-        font-weight: 600;
-        font-size: 1.9rem;
+        font-family: "VT323", monospace;
+        font-weight: 400;
+        font-size: 2.3rem;
         text-transform: uppercase;
         letter-spacing: 0.01em;
         color: var(--white);
@@ -724,8 +888,9 @@
       }
 
       .feature p .pop {
-        color: var(--silver);
-        font-style: italic;
+        color: var(--amber-bright);
+        font-style: normal;
+        text-shadow: 0 0 10px var(--glow);
       }
 
       .feature .stack {
@@ -736,10 +901,10 @@
       }
 
       .feature .stack span {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.58rem;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--silver);
         border: 1px solid var(--line);
@@ -749,10 +914,10 @@
       .feature .more {
         display: inline-block;
         margin-top: 1.6rem;
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 400;
         font-size: 0.64rem;
-        letter-spacing: 0.2em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--white);
         border-bottom: 1px solid var(--line);
@@ -796,23 +961,23 @@
       }
 
       .entry .when {
-        font-family: "Special Elite", monospace;
+        font-family: "Share Tech Mono", monospace;
         font-size: 0.66rem;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--grey);
       }
 
       .entry h3 {
-        font-family: "Cormorant Garamond", serif;
-        font-size: 1.8rem;
-        font-weight: 600;
+        font-family: "VT323", monospace;
+        font-size: 2.2rem;
+        font-weight: 400;
         color: var(--white);
         margin: 0.4rem 0 0.3rem;
       }
 
       .entry .org {
-        font-style: italic;
+        font-style: normal;
         color: var(--grey);
         margin-bottom: 1rem;
       }
@@ -845,10 +1010,10 @@
       }
 
       .skill-col h4 {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 400;
         font-size: 0.74rem;
-        letter-spacing: 0.24em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--white);
         margin-bottom: 1.3rem;
@@ -877,9 +1042,9 @@
       }
 
       .contact .scene {
-        font-family: "Special Elite", monospace;
+        font-family: "Share Tech Mono", monospace;
         font-size: 0.7rem;
-        letter-spacing: 0.25em;
+        letter-spacing: 0.15em;
         color: var(--silver);
         display: block;
         margin-bottom: 1.2rem;
@@ -887,18 +1052,18 @@
       }
 
       .contact h2 {
-        font-family: "Oswald", sans-serif;
-        font-weight: 700;
-        font-size: clamp(2.4rem, 8vw, 5.5rem);
+        font-family: "VT323", monospace;
+        font-weight: 400;
+        font-size: clamp(2.8rem, 9vw, 6.5rem);
         text-transform: uppercase;
         letter-spacing: 0.03em;
         color: var(--white);
-        text-shadow: 0 4px 40px rgba(0, 0, 0, 0.85);
+        text-shadow: 0 4px 40px rgba(0, 0, 0, 0.85), 0 0 26px var(--glow);
       }
 
       .contact p {
         color: var(--silver);
-        font-style: italic;
+        font-style: normal;
         font-size: 1.4rem;
         max-width: 580px;
         margin: 1.6rem auto 3rem;
@@ -914,10 +1079,10 @@
       }
 
       .contact-links a {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.74rem;
-        letter-spacing: 0.2em;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--silver);
         border-bottom: 1px solid transparent;
@@ -938,10 +1103,10 @@
       }
 
       footer .fin {
-        font-family: "Special Elite", monospace;
+        font-family: "Share Tech Mono", monospace;
         color: var(--grey);
         font-size: 0.8rem;
-        letter-spacing: 0.3em;
+        letter-spacing: 0.18em;
         margin-bottom: 1rem;
       }
 
@@ -950,10 +1115,10 @@
       }
 
       footer p {
-        font-family: "Oswald", sans-serif;
+        font-family: "Share Tech Mono", monospace;
         font-weight: 300;
         font-size: 0.64rem;
-        letter-spacing: 0.24em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
         color: var(--grey-dim);
       }
@@ -999,6 +1164,7 @@
         .feature:nth-child(even) .plate,
         .feature:nth-child(even) .feature-body {
           grid-column: 1;
+          grid-row: auto;
         }
 
         .plate {
@@ -1028,6 +1194,8 @@
   <body>
 
     <div class="grain"></div>
+    <div class="scanlines"></div>
+    <div class="crt-flicker"></div>
     <div class="vignette"></div>
 
     <nav id="nav">
